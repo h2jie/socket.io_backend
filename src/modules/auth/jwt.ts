@@ -3,12 +3,16 @@ import { IUser } from "../users/user_models.js";
 import jwt from 'jsonwebtoken';
 
 interface AccessTokenPayload {
-    userId: string,
+    userId: string;
+    name: string;
+    email: string;
 }
 
 export function generateAccessToken(user: IUser): string {
     const payload: AccessTokenPayload = {
         userId: user._id!,
+        name: user.name,
+        email: user.email || '',
     };
     return jwt.sign(payload, JWT_ACCESS_KEY, { expiresIn: '15m' });
 }

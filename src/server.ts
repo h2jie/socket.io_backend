@@ -96,7 +96,8 @@ chatIO.on('connection', (socket) => {
         if (!token) return next(new Error('unauthorized'));
 
         try {
-            verifyAccessToken(token);
+            const decoded = verifyAccessToken(token);
+            socket.data.user = decoded;
             return next();
         } catch (err) {
             return next(new Error('unauthorized'));
@@ -115,6 +116,9 @@ chatIO.on('connection', (socket) => {
     socket.on('join_room', (roomId: string) => {
         socket.join(roomId);
         console.log(`Usuario con ID: ${socket.id} se unió a la sala: ${roomId}`);
+        
+        const username = socket.data.user?.name || 'Anonymous';
+        socket.to(roomId).emit('user_joined', { username });
     });
 
     // Manejar evento para enviar un mensaje
